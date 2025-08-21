@@ -6,13 +6,34 @@ import './App.css';
 declare global {
   interface Window {
     ChatBoxSDK: {
-      init: (options?: { target?: HTMLElement, defaultWidth?: string, defaultHeight?: string }) => void;
+      init: (options?: { serverUrl?: string, target?: HTMLElement, defaultWidth?: string, defaultHeight?: string, appId?: string }) => void;
     };
   }
 }
 
 const ChatBoxSDK = {
-  init: (options?: { target?: HTMLElement, defaultWidth?: string, defaultHeight?: string }) => {
+  init: async (options?: { serverUrl?: string, target?: HTMLElement, defaultWidth?: string, defaultHeight?: string, appId?: string }) => {
+    let initData: any;
+    const serverUrl = options?.serverUrl || 'https://api.example.com';
+    const appId = options?.appId;
+    console.log('appId', appId);
+    try {
+      const response = await fetch(`${serverUrl}/api/chatbase/init`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      initData = data;
+    } catch (error) {
+      console.error('Failed to fetch init data:', error);
+      return;
+    }
+
+    if (!initData) {
+      console.error('Init data is not available, UI will not be rendered.');
+      return;
+    }
+
     let container = options?.target;
 
     if (!container) {
@@ -25,14 +46,13 @@ const ChatBoxSDK = {
       container.style.height = options?.defaultHeight || '600px';
       container.style.zIndex = '9999';
       document.body.appendChild(container);
-
-      makeDraggable(container);
     }
 
     const root = ReactDOM.createRoot(container);
     root.render(
       <React.StrictMode>
         <App 
+          initData={initData}
           onHeaderRendered={(headerElement) => makeDraggable(container, headerElement)}
           onMinimize={(minimized)=>{
             console.log('Minimized:', minimized);

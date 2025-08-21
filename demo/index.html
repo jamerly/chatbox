@@ -14,12 +14,16 @@
   <h1>ChatBox SDK Demo</h1>
   <p>This is a demo of the ChatBox SDK.</p>
 
-  <button onclick="window.ChatBoxSDK.init()">Initialize Floating ChatBox</button>
-  <button onclick="window.ChatBoxSDK.init({ defaultWidth: '500px', defaultHeight: '700px' })">Initialize Custom Size Floating ChatBox</button>
-  <button onclick="window.ChatBoxSDK.init({ target: document.getElementById('chatbox-target') })">Initialize in Target Div</button>
-
   <div id="chatbox-target" style="width: 500px; height: 700px; border: 1px solid black; margin-top: 20px;"></div>
 
   <script src="../dist/chatbox-sdk.umd.js"></script>
+  <script>
+    window.ChatBoxSDK.init({
+      serverUrl: 'http://localhost:8083',
+      defaultWidth: '400px',
+      defaultHeight: '600px',
+      appId: '123'
+    });
+  </script>
 </body>
 </html>

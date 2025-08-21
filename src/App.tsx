@@ -5,14 +5,14 @@ import TerminalView from './TerminalView'; // Import TerminalView
 import ChatBoxView from './ChatBoxView'; // Import ChatBoxView
 
 interface AppProps {
+  initData: any;
   onHeaderRendered?: (element: HTMLDivElement) => void;
   onMinimize?: (minimized: boolean) => void;
 }
 
-function App({ onHeaderRendered, onMinimize }: AppProps) {
+function App({ initData, onHeaderRendered, onMinimize }: AppProps) {
   const [messages, setMessages] = useState<Message[]>([ // Use Message type for messages state
-    { type: 'info', content: 'Welcome to the Gemini CLI!' },
-    { type: 'info', content: 'Type "help" for a list of commands.' },
+    { type: 'info', content: initData.welcome_message },
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false); // New state for processing status
