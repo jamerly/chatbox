@@ -5,6 +5,6 @@ import App from './App.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <App serverUrl='' appId='' language='en' welcomeMessage='Hello, welcome to our application!' />
   </StrictMode>,
 )

@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './App.css';
+import { fetchWelcomeMessage } from './services/chatboxApi';
 
 declare global {
   interface Window {
@@ -13,24 +14,20 @@ declare global {
 
 const ChatBoxSDK = {
   init: async (options?: { serverUrl?: string, target?: HTMLElement, defaultWidth?: string, defaultHeight?: string, appId?: string }) => {
-    let initData: any;
     const serverUrl = options?.serverUrl || 'https://api.example.com';
     const appId = options?.appId;
     console.log('appId', appId);
-    try {
-      const response = await fetch(`${serverUrl}/api/chatbase/init`);
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      const data = await response.json();
-      initData = data;
-    } catch (error) {
-      console.error('Failed to fetch init data:', error);
+
+    if (!appId) {
+      console.error('App ID is required for ChatBoxSDK initialization.');
       return;
     }
 
-    if (!initData) {
-      console.error('Init data is not available, UI will not be rendered.');
+    let welcomeMessage: string = '';
+    try {
+      welcomeMessage = await fetchWelcomeMessage(serverUrl,appId, navigator.language || "en-US");
+    } catch (error) {
+      console.error('Failed to fetch welcome message:', error);
       return;
     }
 
@@ -52,7 +49,10 @@ const ChatBoxSDK = {
     root.render(
       <React.StrictMode>
         <App 
-          initData={initData}
+          welcomeMessage={welcomeMessage}
+          serverUrl={serverUrl}
+          appId={appId}
+          language={navigator.language || "en-US"}
           onHeaderRendered={(headerElement) => makeDraggable(container, headerElement)}
           onMinimize={(minimized)=>{
             console.log('Minimized:', minimized);

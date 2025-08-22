@@ -1,58 +1,65 @@
-import { useState, useRef, useEffect } from 'react' // Import useRef and useEffect
+import { useState, useRef, useEffect } from 'react'
 import './App.css'
-import { processMessage,type Message } from './messageProcessor'; // Import processMessage and Message
-import TerminalView from './TerminalView'; // Import TerminalView
-import ChatBoxView from './ChatBoxView'; // Import ChatBoxView
+import { processMessage, type Message } from './messageProcessor';
+import TerminalView from './TerminalView';
+import ChatBoxView from './ChatBoxView';
 
 interface AppProps {
-  initData: any;
+  welcomeMessage: string;
+  serverUrl: string;
+  appId: string;
+  language: string;
   onHeaderRendered?: (element: HTMLDivElement) => void;
   onMinimize?: (minimized: boolean) => void;
 }
 
-function App({ initData, onHeaderRendered, onMinimize }: AppProps) {
-  const [messages, setMessages] = useState<Message[]>([ // Use Message type for messages state
-    { type: 'info', content: initData.welcome_message },
+function App({ welcomeMessage, serverUrl, appId, language, onHeaderRendered, onMinimize }: AppProps) {
+  const [messages, setMessages] = useState<Message[]>([
+    { type: 'info', content: welcomeMessage },
   ]);
   const [inputValue, setInputValue] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false); // New state for processing status
-  const [currentStyle, setCurrentStyle] = useState<'terminal' | 'chatbox'>('terminal'); // New state for current style
-  const [isMinimized, setIsMinimized] = useState(false); // New state for minimized status
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [currentStyle, setCurrentStyle] = useState<'terminal' | 'chatbox'>('terminal');
+  const [isMinimized, setIsMinimized] = useState(false);
+  const [chatId, setChatId] = useState<string | undefined>(undefined); // New state for chatId
+
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
-  const handleKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => { // Make handleKeyDown async
+  const handleKeyDown = async (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {
       const command = inputValue.trim();
-      if (!command) { // Don't process empty commands
+      if (!command) {
         setInputValue('');
         return;
       }
-
-      setMessages((prevMessages) => [...prevMessages, { type: 'command', content: command }]);
+      setInputValue('');
+      const currentMessage = JSON.parse( JSON.stringify(messages) );
+      currentMessage.push({ type: 'command', content: command });
+      setMessages([...currentMessage]);
 
       if (command === '/clear') {
-        setMessages([]); // Clear all messages
+        setMessages([]);
+        setChatId(undefined); // Clear chatId on /clear
       } else {
-        setIsProcessing(true); // Start processing
-        const responseMessages = await processMessage(command);
-        let delay = 0;
-        for (let i = 0; i < responseMessages.length; i++) {
-          const msg = responseMessages[i];
-          setTimeout(() => {
-            setMessages((prevMessages) => [...prevMessages, msg]);
-            if (i === responseMessages.length - 1) {
-              setIsProcessing(false); // End processing after the last message
-            }
-          }, delay);
-          delay += 100; // Add 100ms delay between each streamed message
-        }
+        setIsProcessing(true);
+        
+        let lastMessage = "";
+        await processMessage(command, serverUrl, appId, language, chatId, (chunk: Message) => {
+          if( chunk.type === "response" ){
+            lastMessage += chunk.content;
+            chunk = { type: 'response', content: lastMessage };
+          }else{
+            currentMessage.push(chunk);
+          }
+          setMessages([...currentMessage, chunk]);
+        });
+        setIsProcessing(false);
       }
-      setInputValue('');
+      
     }
   };
-
 
   const headerRef = (node: HTMLDivElement) => {
     if (node && onHeaderRendered) {
@@ -86,7 +93,7 @@ function App({ initData, onHeaderRendered, onMinimize }: AppProps) {
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#abb2bf' }}>
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
           </svg>
-        ):(
+        ): (
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#00ff00' }}>
             <path d="M10 17l5-5-5-5"/>
           </svg>
@@ -100,7 +107,7 @@ function App({ initData, onHeaderRendered, onMinimize }: AppProps) {
             handleInputChange={handleInputChange}
             handleKeyDown={handleKeyDown}
             isProcessing={isProcessing}
-            currentStyle={currentStyle} // Pass currentStyle for prompt logic
+            currentStyle={currentStyle}
           />
         ) : (
           <ChatBoxView
@@ -109,7 +116,7 @@ function App({ initData, onHeaderRendered, onMinimize }: AppProps) {
             handleInputChange={handleInputChange}
             handleKeyDown={handleKeyDown}
             isProcessing={isProcessing}
-            currentStyle={currentStyle} // Pass currentStyle
+            currentStyle={currentStyle}
           />
         )
       )}
