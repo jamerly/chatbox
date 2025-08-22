@@ -7,6 +7,7 @@ interface TerminalViewProps {
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => Promise<void>;
   isProcessing: boolean;
+  alertMessage: string | null; // New prop for alert messages
   currentStyle: 'terminal' | 'chatbox'; // Pass currentStyle to conditionally render prompt
 }
 
@@ -25,6 +26,7 @@ const TerminalView: React.FC<TerminalViewProps> = ({
   handleInputChange,
   handleKeyDown,
   isProcessing,
+  alertMessage,
   currentStyle,
 }) => {
   const terminalBodyRef = useRef<HTMLDivElement>(null);
@@ -50,6 +52,7 @@ const TerminalView: React.FC<TerminalViewProps> = ({
             {currentStyle !== 'chatbox' && msg.type === 'command' && <span className="prompt">guest@chatbox:~$ </span>} {msg.content}
           </p>
         ))}
+        {alertMessage && <p className="message-warn-special">{alertMessage}</p>}
         <div className="terminal-input-line"> {/* New div for the input line */}
           <span className="prompt">guest@chatbox:~$ </span>
           <input

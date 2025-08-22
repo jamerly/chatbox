@@ -5,7 +5,7 @@ export type Message = {
   content: string;
 };
 
-export const processMessage = async (command: string, url: string, appId: string, language: string, chatId?: string, onChunk?: (chunk: Message) => void): Promise<void> => {
+export const processMessage = async (command: string, url: string, appId: string, loadUserToken?: () => Promise<string>, language: string, chatId?: string, onChunk?: (chunk: Message) => void): Promise<void> => {
   const trimmedCommand = command.trim();
 
   if (trimmedCommand === '/clear') {
@@ -13,7 +13,8 @@ export const processMessage = async (command: string, url: string, appId: string
   }
 
   try {
-    await sendMessage(url, appId, language, trimmedCommand, chatId, chunkMsg =>{
+    let userToken = await loadUserToken?.();
+    await sendMessage(url, appId, userToken,language, trimmedCommand, chatId, chunkMsg =>{
       // Handle each chunk of the response here
       const chunkMsgs = chunkMsg.split("\n");
       for( var i = 0 ;i < chunkMsgs.length; i++ ){ 

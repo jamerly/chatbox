@@ -154,25 +154,25 @@
 
 .chatbox-style .terminal-body {
   padding: 10px;
-  background-color: #f0f2f5;
+  background-color: #e4e4e4;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+    word-wrap: break-word;
+  font-size: 0.95em;
+  line-height: 1.3;
 }
 
 .terminal-body p {
   white-space: pre-wrap;
 }
 
-.chatbox-style .terminal-body p {
-  margin-bottom: 8px;
-  padding: 10px 14px;
-  border-radius: 18px;
-  max-width: 75%;
-  word-wrap: break-word;
-  font-size: 0.95em;
-  line-height: 1.3;
+.chatbox-style .terminal-body .warn {
+  background: orange;
+  padding:5px;
+  border-radius: 2px;
 }
+
 
 .prompt {
   color: #FFF;
@@ -259,21 +259,49 @@
 }
 
 .chatbox-style .command {
-  background-color: #007bff;
+  
+  background-color: #919191;
   color: #ffffff;
   align-self: flex-end;
   margin-left: auto;
+  max-width: 75%;
+   padding:8px;
+  border-radius: 10px;
   border-bottom-right-radius: 2px;
 }
 
 .chatbox-style .response,
 .chatbox-style .info,
 .chatbox-style .error {
-  background-color: #e4e6eb;
+  background-color: #95e978;
   color: #333333;
+  max-width: 75%;
+  padding:8px;
+  border-radius: 10px;
   align-self: flex-start;
   margin-right: auto;
   border-bottom-left-radius: 2px;
+}
+
+/* Special warn style */
+.message-warn-special {
+  background-color: #fff3cd;
+  color: #664d03;
+  border: 1px solid #ffecb5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  word-wrap: break-word;
+  font-size: 0.95em;
+  line-height: 1.3;
+}
+
+.message-warn-special::before {
+  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#664d03" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.5a.5.5 0 0 1-1.002 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>');
+  margin-right: 8px;
+  flex-shrink: 0;
 }
 
 @keyframes blink-caret {

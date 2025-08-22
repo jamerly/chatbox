@@ -7,13 +7,14 @@ interface ChatBoxViewProps {
   handleInputChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handleKeyDown: (event: React.KeyboardEvent<HTMLInputElement>) => Promise<void>;
   isProcessing: boolean;
+  alertMessage: string | null; // New prop for alert messages
   currentStyle: 'terminal' | 'chatbox'; // Pass currentStyle for prompt logic
 }
 
 // Re-declare Message type here or import from messageProcessor if needed
 // In a real app, you'd import it: import { Message } from './messageProcessor';
 type Message = {
-  type: 'info' | 'command' | 'response' | 'error';
+  type: 'info' | 'command' | 'response' | 'error' | 'warn';
   content: string;
 };
 
@@ -24,6 +25,7 @@ const ChatBoxView: React.FC<ChatBoxViewProps> = ({
   handleInputChange,
   handleKeyDown,
   isProcessing,
+  alertMessage,
   currentStyle,
 }) => {
   const chatBodyRef = useRef<HTMLDivElement>(null);
@@ -38,10 +40,11 @@ const ChatBoxView: React.FC<ChatBoxViewProps> = ({
     <> {/* Use a fragment as the container class is applied in App.tsx */}
       <div className="terminal-body" ref={chatBodyRef}> {/* Re-using terminal-body class for scrollable area */}
         {messages.map((msg, index) => (
-          <p key={index} className={msg.type}>
+          <p key={index} className={msg.type === 'warn' ? 'message-warn-special' : msg.type}>
             {msg.content}
           </p>
         ))}
+        {alertMessage && <p className="message-warn-special">{alertMessage}</p>}
       </div>
       <div className="terminal-input-line"> {/* Re-using terminal-input-line class for input area */}
         <input

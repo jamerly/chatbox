@@ -8,6 +8,10 @@ interface ApiResponse<T = any> {
   data: T;
 }
 
+interface InitResponse {
+  sessionId: string;
+  message: string;
+}
 // Minimal HttpService for this SDK
 class HttpService {
   static async get<T = any>(url: string, headers: HeadersInit = {}): Promise<T> {
@@ -47,47 +51,31 @@ class HttpService {
   }
 }
 
-export const fetchWelcomeMessage = async (url:string, appId: string, language: string): Promise<string> => {
-  const responseData = await HttpService.get<string>(`${url}/api/chatbases/init`, {
+export const fetchWelcomeMessage = async (url:string, appId: string, userToken: string | undefined, language: string): Promise<string> => {
+  const responseData = await HttpService.get<InitResponse>(`${url}/api/chatbases/init`, {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'X-App-Id': appId,
     'X-Accept-Language': language,
+    'Authorization': `Bearer ${userToken}`
   });
 
-  let accumulatedResponse = '';
-  const jsonStrings = responseData.replace("[DONE]","").split('}{').map((s, index, arr) => {
-    if (index === 0) return s + '}';
-    if (index === arr.length - 1) return '{' + s;
-    return '{' + s + '}';
-  });
-
-  for (const jsonStr of jsonStrings) {
-    try {
-      if (jsonStr.trim() === '[DONE]') {
-        break;
-      }
-      const parsed = JSON.parse(jsonStr);
-      if (parsed.chunk) {
-        accumulatedResponse += parsed.chunk;
-      }
-    } catch (e) {
-      console.error('Error parsing welcome message chunk:', jsonStr, e);
-    }
+  if( responseData.sessionId ){
+    localStorage.setItem("chatbox_session_id", responseData.sessionId);
   }
-  if( accumulatedResponse.startsWith("\"")){
-    accumulatedResponse = accumulatedResponse.substring(1);
-  }
-  if( accumulatedResponse.endsWith("\"")){
-    accumulatedResponse = accumulatedResponse.substring(0, accumulatedResponse.length - 1);
-  }
-  return accumulatedResponse;
+  return responseData.message;
 };
 
-export const sendMessage = async (url: string, appId: string, language: string, message: string, chatId?: string, onChunk?: (chunk: string) => void): Promise<void> => {
+export const sendMessage = async (url: string, appId: string, userToken: string | undefined, language: string, message: string, chatId?: string, onChunk?: (chunk: string) => void): Promise<void> => {
   const requestBody: { message: string; chatId?: string } = { message };
   if (chatId) {
     requestBody.chatId = chatId;
+  }
+  let sessionId = localStorage.getItem("chatbox_session_id")
+  if( sessionId ==null ){
+    console.warn("No session ID found");
+    onChunk?.(JSON.stringify({ type: 'error', content: 'No session lost, please refresh the page.' }));
+    return
   }
   const response = await fetch(`${url}/api/chatbases/chat`, {
     method: 'POST',
@@ -95,6 +83,8 @@ export const sendMessage = async (url: string, appId: string, language: string, 
       'Content-Type': 'application/json',
       'X-App-Id': appId,
       'X-Accept-Language': language,
+      'X-Session-Id': sessionId || '',
+      'Authorization': `Bearer ${userToken}`
     },
     body: JSON.stringify(requestBody),
   });
