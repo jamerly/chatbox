@@ -1,6 +1,7 @@
 import React from 'react'
 import './App.css'
 import { processMessage, type Message } from './messageProcessor';
+import { queryChat } from './services/chatboxApi';
 import TerminalView from './TerminalView';
 import ChatBoxView from './ChatBoxView';
 
@@ -57,10 +58,11 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   componentDidMount() {
-    if( this.props.closable ){}
+    this.loadHistory();
+    if( this.props.closable ){
       this.checkInactivity();
     }
-
+  }
   componentWillUnmount() {
     this.isDestroyed = true;
     if (this.animationFrameId) {
@@ -168,7 +170,22 @@ class App extends React.Component<AppProps, AppState> {
     });
   }
 
+  loadHistory = async () => {
+    const { serverUrl, appId, loadUserToken, language } = this.props;
+    const userToken = await loadUserToken();
+    const history = await queryChat(serverUrl, appId, userToken, language);
+    for( const messageItem of history ){
+      this.setState(prevState => ({
+        messages: [...prevState.messages, { type: 'command', content: messageItem.userMessage }]
+      }));
+      this.setState(prevState => ({
+        messages: [...prevState.messages, { type: 'response', content: messageItem.aiResponse }]
+      }));
+    }
+  }
+
   render() {
+    
     const { messages, inputValue, isProcessing, currentStyle, isMinimized, alertMessage } = this.state;
     const { closable } = this.props;
     return (

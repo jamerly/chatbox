@@ -52,11 +52,13 @@ class HttpService {
 }
 
 export const fetchWelcomeMessage = async (url:string, appId: string, userToken: string | undefined, language: string): Promise<string> => {
-  const responseData = await HttpService.get<InitResponse>(`${url}/api/chatbases/init`, {
+  let sessionId = localStorage.getItem("chatbox_session_id");
+  const responseData = await HttpService.get<InitResponse>(`${url}/api/chatbases/client/init`, {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'X-App-Id': appId,
     'X-Accept-Language': language,
+    'X-Session-Id': sessionId || '',
     'Authorization': `Bearer ${userToken}`
   });
 
@@ -64,6 +66,19 @@ export const fetchWelcomeMessage = async (url:string, appId: string, userToken: 
     localStorage.setItem("chatbox_session_id", responseData.sessionId);
   }
   return responseData.message;
+};
+
+export const queryChat = async (url: string, appId: string, userToken: string | undefined, language: string): Promise<any> => {
+  let sessionId = localStorage.getItem("chatbox_session_id");
+  const responseData = await HttpService.get<{ answer: string }>(`${url}/api/chatbases/client/history`, {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'X-App-Id': appId,
+    'X-Accept-Language': language,
+    'X-Session-Id': sessionId || '',
+    'Authorization': `Bearer ${userToken}`
+  });
+  return responseData;
 };
 
 export const sendMessage = async (url: string, appId: string, userToken: string | undefined, language: string, message: string, chatId?: string, onChunk?: (chunk: string) => void): Promise<void> => {
@@ -77,7 +92,7 @@ export const sendMessage = async (url: string, appId: string, userToken: string 
     onChunk?.(JSON.stringify({ type: 'error', content: 'No session lost, please refresh the page.' }));
     return
   }
-  const response = await fetch(`${url}/api/chatbases/chat`, {
+  const response = await fetch(`${url}/api/chatbases/client/chat`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
