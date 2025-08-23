@@ -11,6 +11,7 @@ interface ApiResponse<T = any> {
 interface InitResponse {
   sessionId: string;
   message: string;
+  chatToken: string
 }
 // Minimal HttpService for this SDK
 class HttpService {
@@ -64,6 +65,7 @@ export const fetchWelcomeMessage = async (url:string, appId: string, userToken: 
 
   if( responseData.sessionId ){
     localStorage.setItem("chatbox_session_id", responseData.sessionId);
+    localStorage.setItem("chatbox_chat_token", responseData.chatToken);
   }
   return responseData.message;
 };
@@ -76,6 +78,7 @@ export const queryChat = async (url: string, appId: string, userToken: string | 
     'X-App-Id': appId,
     'X-Accept-Language': language,
     'X-Session-Id': sessionId || '',
+    'X-Chat-Token': localStorage.getItem("chatbox_chat_token") || '',
     'Authorization': `Bearer ${userToken}`
   });
   return responseData;
@@ -99,6 +102,7 @@ export const sendMessage = async (url: string, appId: string, userToken: string 
       'X-App-Id': appId,
       'X-Accept-Language': language,
       'X-Session-Id': sessionId || '',
+      'X-Chat-Token': localStorage.getItem("chatbox_chat_token") || '',
       'Authorization': `Bearer ${userToken}`
     },
     body: JSON.stringify(requestBody),
