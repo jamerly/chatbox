@@ -1,4 +1,4 @@
-import React, { version } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './App.css';
@@ -21,7 +21,6 @@ declare global {
 }
 
 const ChatBoxSDK = {
-  version: "0.0.1",
   init: async (options?: { 
     serverUrl?: string, 
     target?: HTMLElement, 
@@ -54,7 +53,7 @@ const ChatBoxSDK = {
 
     if (!container) {
       container = document.createElement('div');
-      container.className = 'terminal-container';
+      container.className = 'chatbox-container';
       container.style.position = 'fixed';
       container.style.bottom = '20px';
       container.style.right = '20px';
@@ -68,19 +67,13 @@ const ChatBoxSDK = {
     root.render(<>{ !destroyed &&
       <React.StrictMode>
         <App 
+          container={container}
           welcomeMessage={welcomeMessage}
           serverUrl={serverUrl}
           appId={appId}
           loadUserToken={loadUserToken}
           language={navigator.language || "en-US"}
-          onHeaderRendered={(headerElement) => makeDraggable(container, headerElement)}
-          onMinimize={(minimized)=>{
-            if( minimized ){
-              container.classList.add('minimized');
-            }else{
-              container.classList.remove('minimized');
-            }
-          }}
+          
           closable={closable}
           onDestroy={() => {
             destroyed = true;
@@ -98,133 +91,7 @@ const ChatBoxSDK = {
   },
 };
 
-function makeDraggable(element: HTMLElement, handle: HTMLElement) {
-  if (!handle) {
-    return;
-  }
-  let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
-  handle.onmousedown = dragMouseDown;
-  // handle.style.cursor = 'grab'; // Set initial cursor for dragging
-
-  let isResizing = false;
-  let currentResizer: string | null = null;
-
-  element.addEventListener('mousedown', function(e) {
-    const rect = element.getBoundingClientRect();
-    const resizeHandleSize = 10; // pixels
-
-    if (e.clientX < rect.left + resizeHandleSize && e.clientY < rect.top + resizeHandleSize) {
-      isResizing = true;
-      currentResizer = 'top-left';
-    } else if (e.clientX > rect.right - resizeHandleSize && e.clientY > rect.bottom - resizeHandleSize) {
-      isResizing = true;
-      currentResizer = 'bottom-right';
-    } else if (e.clientX < rect.left + resizeHandleSize) {
-      isResizing = true;
-      currentResizer = 'left';
-    } else if (e.clientX > rect.right - resizeHandleSize) {
-      isResizing = true;
-      currentResizer = 'right';
-    } else if (e.clientY < rect.top + resizeHandleSize) {
-      isResizing = true;
-      currentResizer = 'top';
-    } else if (e.clientY > rect.bottom - resizeHandleSize) {
-      isResizing = true;
-      currentResizer = 'bottom';
-    }
-
-    if (isResizing) {
-      e.preventDefault();
-      pos3 = e.clientX;
-      pos4 = e.clientY;
-      document.onmouseup = closeDragOrResizeElement;
-      document.onmousemove = elementResize;
-    }
-  });
-
-  element.addEventListener('mousemove', function(e) {
-    const rect = element.getBoundingClientRect();
-    const resizeHandleSize = 10; // pixels
-
-    if (isResizing) {
-      // Do nothing, resizing takes precedence
-      return;
-    }
-
-    if (e.clientX < rect.left + resizeHandleSize && e.clientY < rect.top + resizeHandleSize) {
-      element.style.cursor = 'nwse-resize';
-    } else if (e.clientX > rect.right - resizeHandleSize && e.clientY > rect.bottom - resizeHandleSize) {
-      element.style.cursor = 'nwse-resize';
-    } else if (e.clientX < rect.left + resizeHandleSize || e.clientX > rect.right - resizeHandleSize) {
-      element.style.cursor = 'ew-resize';
-    } else if (e.clientY < rect.top + resizeHandleSize || e.clientY > rect.bottom - resizeHandleSize) {
-      element.style.cursor = 'ns-resize';
-    } else {
-      element.style.cursor = 'default';
-    }
-  });
-
-  function dragMouseDown(e: MouseEvent) {
-    e = e || window.event;
-    e.preventDefault();
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    document.onmouseup = closeDragOrResizeElement;
-    document.onmousemove = elementDrag;
-    handle.style.cursor = 'grabbing';
-  }
-
-  function elementDrag(e: MouseEvent) {
-    e = e || window.event;
-    e.preventDefault();
-    pos1 = pos3 - e.clientX;
-    pos2 = pos4 - e.clientY;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-    element.style.top = (element.offsetTop - pos2) + "px";
-    element.style.left = (element.offsetLeft - pos1) + "px";
-  }
-
-  function elementResize(e: MouseEvent) {
-    e = e || window.event;
-    e.preventDefault();
-
-    const dx = e.clientX - pos3;
-    const dy = e.clientY - pos4;
-    pos3 = e.clientX;
-    pos4 = e.clientY;
-
-    if (currentResizer === 'bottom-right') {
-      element.style.width = (element.offsetWidth + dx) + 'px';
-      element.style.height = (element.offsetHeight + dy) + 'px';
-    } else if (currentResizer === 'bottom') {
-      element.style.height = (element.offsetHeight + dy) + 'px';
-    } else if (currentResizer === 'right') {
-      element.style.width = (element.offsetWidth + dx) + 'px';
-    } else if (currentResizer === 'top-left') {
-      element.style.width = (element.offsetWidth - dx) + 'px';
-      element.style.left = (element.offsetLeft + dx) + 'px';
-      element.style.height = (element.offsetHeight - dy) + 'px';
-      element.style.top = (element.offsetTop + dy) + 'px';
-    } else if (currentResizer === 'left') {
-      element.style.width = (element.offsetWidth - dx) + 'px';
-      element.style.left = (element.offsetLeft + dx) + 'px';
-    } else if (currentResizer === 'top') {
-      element.style.height = (element.offsetHeight - dy) + 'px';
-      element.style.top = (element.offsetTop + dy) + 'px';
-    }
-  }
-
-  function closeDragOrResizeElement() {
-    document.onmouseup = null;
-    document.onmousemove = null;
-    isResizing = false;
-    currentResizer = null;
-    element.style.cursor = 'default';
-    handle.style.cursor = 'default';
-  }
-}
 
 window.ChatBoxSDK = ChatBoxSDK;
 

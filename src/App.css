@@ -1,44 +1,57 @@
-.terminal-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
+.chatbox-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 500px;
+  height: 600px;
   border-radius: 8px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 20px rgba(198, 179, 179, 0.5);
+  transition: width 0.3s ease-in-out, height 0.3s ease-in-out, border-radius 0.3s ease-in-out;
 }
 
 .minimized {
-    width: 100px !important;
-}
-.minimized .terminal-container{
-  background-color: #3c4048;
-
-}
-.minimized .switch-style{
-  display: none;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #FF6600;
+  box-shadow: none;
 }
 
-.terminal-container.terminal-style {
-  font-family: 'Menlo', 'Monaco', 'Consolas', 'monospace';
-  background-color: #0a0a0a;
-  color: #00ff00;
-  border: 2px solid #00ff00;
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3), inset 0 0 10px rgba(0, 255, 0, 0.2);
-  background-image: linear-gradient(rgba(0, 255, 0, 0.05) 50%, transparent 50%);
-  background-size: 100% 4px;
+.chatbox-container.minimized {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
 }
 
-.terminal-container.chatbox-style {
+.minimized .minimized-icon {
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: #FF6600;
+  border-radius: 50%;
+  color: white;
+  padding-left:2px;
+  box-sizing: border-box;
+}
+
+.minimized .chatbox-body,
+.minimized .chatbox-input-line {
+  display: none !important;
+}
+
+.chatbox-container.chatbox-style {
   font-family: 'monospace', monospace;
-  background-color: #f0f2f5;
-  color: #333333;
+  background-color: #F8F8F8;
+  color: #993D00;
   border-radius: 8px;
 }
 
-.terminal-header {
-  background-color: #3c4048;
+.chatbox-header {
+  background-color: #993D00;
   padding: 8px;
   display: flex;
   align-items: center;
@@ -47,27 +60,23 @@
   border-top-right-radius: 8px;
 }
 
-.terminal-style .terminal-header {
-  background-color: #1a1a1a;
-  border-bottom: 1px solid #00ff00;
-}
-
-.terminal-buttons {
+.chatbox-buttons {
   display: flex;
   gap: 6px;
+  width: 54px;
 }
 
-.terminal-button {
+.chatbox-button {
   width: 12px;
   height: 12px;
   border-radius: 50%;
 }
 
-.terminal-button.close {
+.chatbox-button.close {
   background-color: #ff5f56;
 }
 
-.terminal-button.close::before {
+.chatbox-button.close::before {
     content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M3.5 3.5L8.5 8.5M8.5 3.5L3.5 8.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>');
     color: #fff;
     font-size: 12px;
@@ -77,16 +86,16 @@
     transition: opacity 0.2s ease; /* 平滑过渡效果 */
 }
 
-.terminal-button.minimize {
-  display: inline;
-  background-color: #27c93f;
+.chatbox-button.minimize {
+  display: inline-block;
+  background-color: #FF6600;
 }
 
-.minimized .terminal-button.minimize {
+.minimized .chatbox-button.minimize {
   display: none;
 }
 
-.terminal-button.minimize::before {
+.chatbox-button.minimize::before {
     content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><path d="M4 6H8" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>');
     color: #fff;
     font-size: 12px;
@@ -97,16 +106,16 @@
 }
 
 
-.terminal-button.maximize {
+.chatbox-button.maximize {
   background-color: #CCC;
-  display: none;;
+  display: none;; 
 }
-.minimized .terminal-button.maximize {
+.minimized .chatbox-button.maximize {
   background-color: #ffbd2e;
   display: inline;
 }
 
-.minimized .terminal-button.maximize::before {
+.minimized .chatbox-button.maximize::before {
     content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12"><rect x="4" y="4" width="4" height="4" stroke="white" stroke-width="1.5" fill="none"/></svg>');
     color: #fff;
     font-size: 12px;
@@ -117,44 +126,36 @@
     display: inline;
 }
 
-.terminal-button:hover::before {
+.chatbox-button:hover::before {
     opacity: 1; /* 悬停时显示关闭标识 */
 }
 
-.minimized .terminal-button.maximize:hover::before {
+.minimized .chatbox-button.maximize:hover::before {
      opacity: 1; /* 悬停时显示最大化标识 */
 }
-.terminal-title {
-  color: #abb2bf;
+.chatbox-title {
+  color: #FFF;
   font-size: 0.9em;
+  flex-grow: 1;
+  text-align: center;
 }
 
-.terminal-style .terminal-title {
-  color: #00ff00;
-  text-shadow: 0 0 2px #00ff00;
-}
-
-.chatbox-style .terminal-header .terminal-title {
+.chatbox-container.minimized .chatbox-header{
   display: none;
 }
 
-.terminal-body {
+.chatbox-body {
   flex-grow: 1;
   overflow-y: auto;
   background-color: #242424;
   padding:10px;
 }
 
-.terminal-style .terminal-body {
-  font-size: 1.1em;
-  text-shadow: 0 0 3px rgba(0, 255, 0, 0.7);
-  background-color: transparent;
-  padding: 15px;
-}
 
-.chatbox-style .terminal-body {
+
+.chatbox-style .chatbox-body {
   padding: 10px;
-  background-color: #e4e4e4;
+  background-color: #FFFFFF;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -163,11 +164,11 @@
   line-height: 1.3;
 }
 
-.terminal-body p {
+.chatbox-body p {
   white-space: pre-wrap;
 }
 
-.chatbox-style .terminal-body .warn {
+.chatbox-style .chatbox-body .warn {
   background: orange;
   padding:5px;
   border-radius: 2px;
@@ -178,56 +179,30 @@
   color: #FFF;
 }
 
-.terminal-style .prompt {
-  color: #00ff00;
-}
+
 
 .chatbox-style .prompt {
   display: none;
 }
 
-.terminal-input-line {
+.chatbox-input-line {
   display: flex;
   align-items: baseline;
   padding: 0px 5px 10px ;
 }
 
-.terminal-style .terminal-input-line {
-  background-color: #0a0a0a;
-  
-}
 
-.chatbox-style .terminal-input-line {
+
+.chatbox-style .chatbox-input-line {
   background-color: #ffffff;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid #FFD6B3;
   padding: 10px 15px;
 }
 
-.terminal-input-inline {
-  flex-grow: 1;
-  background-color: transparent;
-  border: none;
-  font-size: 1em;
-  outline: none;
-  color:#FFF;
-  margin-left: 5px;
-}
 
-.terminal-style .terminal-input-inline {
-  color: #00ff00;
-  font-family: 'Menlo', 'Monaco', 'Consolas', 'monospace';
-  caret-color: #00ff00;
-  border-right: 0.5em solid #00ff00;
-  animation: blink-caret 1s step-end infinite;
-}
-
-.terminal-style .terminal-input-inline:focus {
-  border-right: 0.5em solid #00ff00;
-}
-
-.chatbox-style .terminal-input-inline {
-  color: #333;
-  caret-color: #333333;
+.chatbox-style .chatbox-input-inline {
+  color: #993D00;
+  caret-color: #993D00;
 }
 
 .command {
@@ -248,68 +223,247 @@
   color: #e06c75;
 }
 
-.terminal-style .command,
-.terminal-style .response,
-.terminal-style .info {
-  color: #00ff00;
-}
 
-.terminal-style .error {
-  color: #ff5f56;
-}
+
 
 .chatbox-style .command {
-  
-  background-color: #919191;
+  position: relative;
+  background-color: #FF6600;
   color: #ffffff;
   align-self: flex-end;
   margin-left: auto;
   max-width: 75%;
-   padding:8px;
-  border-radius: 10px;
-  border-bottom-right-radius: 2px;
+  padding: 8px 12px;
+  border-radius: 18px 18px 0px 18px;
+  margin-bottom: 10px;
+}
+
+.chatbox-style .command::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: -6px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 0 0 10px;
+  border-color: transparent transparent transparent #FF6600;
 }
 
 .chatbox-style .response,
 .chatbox-style .info,
 .chatbox-style .error {
-  background-color: #95e978;
-  color: #333333;
+  position: relative;
+  background-color: #FFD6B3;
+  color: #993D00;
   max-width: 75%;
-  padding:8px;
-  border-radius: 10px;
+  padding: 8px 12px;
+  border-radius: 18px 18px 18px 0px;
   align-self: flex-start;
   margin-right: auto;
-  border-bottom-left-radius: 2px;
+  margin-bottom: 10px;
+}
+
+.chatbox-style .response::after,
+.chatbox-style .info::after,
+.chatbox-style .error::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -6px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 10px 0 0;
+  border-color: transparent #FFD6B3 transparent transparent;
 }
 
 /* Special warn style */
 .message-warn-special {
   background-color: #fff3cd;
   color: #664d03;
-  border: 1px solid #ffecb5;
-  padding: 10px 14px;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  padding: 8px 12px;
+  border-radius: 18px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   word-wrap: break-word;
   font-size: 0.95em;
   line-height: 1.3;
+  position: relative;
+  align-self: flex-start;
+  margin-right: auto;
+  max-width: 75%;
 }
 
 .message-warn-special::before {
-  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#664d03" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.5a.5.5 0 0 1-1.002 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>');
+  content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="664d03" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.5a.5.5 0 0 1-1.002 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>');
   margin-right: 8px;
   flex-shrink: 0;
 }
 
-@keyframes blink-caret {
-  from, to { border-color: transparent }
-  50% { border-color: #00ff00; }
+.message-warn-special::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -6px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 10px 10px 0 0;
+  border-color: transparent #fff3cd transparent transparent;
+  transform: rotate(15deg);
 }
 
-.minimized {
-  height: 40px !important;
-  transition: height 0.3s ease-in-out;
+/* Greeting Bubble Styles */
+.greeting-bubble {
+  position: fixed;
+  bottom: 90px; /* Adjust based on minimized icon size and desired spacing */
+  right: 20px;
+  background-color: #fff;
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  text-align: left;
+  font-size: 0.9em;
+  z-index: 1000; /* Ensure it's above other elements */
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.greeting-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -10px; /* Position the arrow below the bubble */
+  right: 25px; /* Adjust to align with the icon */
+  border-width: 10px 10px 0;
+  border-style: solid;
+  border-color: #fff transparent transparent transparent;
+  display: block;
+  width: 0;
+  z-index: 1;
+}
+
+.greeting-bubble-close {
+  cursor: pointer;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #999;
+  margin-left: 10px;
+  line-height: 1;
+}
+
+.greeting-bubble-close:hover {
+  color: #333;
+}
+
+.chatbox-footer {
+  padding:10px;
+}
+
+.chatbox-footer .chatbox-input{
+  display:flex;
+  padding:10px;
+  border-radius: 5px;
+  background: #FFF;
+  color:#090909;
+  border:1px solid #FF6600;
+}
+
+.chatbox-footer .chatbox-input-tips{
+  font-size:0.7em;
+  text-align: center;
+  color:#CCC;
+  padding-top:10px;
+  
+}
+.chatbox-footer .chatbox-input-inline {
+  flex: 1;
+  background-color: transparent;
+  border: none;
+  font-size: 0.9em;
+  outline: none;
+  color:#FF6600;
+  flex-grow: 1;
+  margin-left: 5px;
+}
+
+.chatbox-footer .chatbox-input-inline::placeholder {
+  color:#FF6600;
+}
+
+.chatbox-input .send-button {
+  background-color: #FF6600;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 24px;
+  height: 24px;
+}
+
+.chatbox-input .send-button:hover {
+  background-color: #E65C00;
+}
+
+.chatbox-input .send-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.chatbox-menu-container {
+  position: relative;
+  width: 24px;
+}
+
+.chatbox-menu-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chatbox-menu {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  width: 120px;
+}
+
+.chatbox-menu button {
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  text-align: left;
+  cursor: pointer;
+  color: #333;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chatbox-menu button:hover {
+  background-color: #f0f0f0;
+}
+
+.chatbox-menu button svg {
+  width: 16px;
+  height: 16px;
 }

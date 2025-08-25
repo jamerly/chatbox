@@ -11,9 +11,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: 'src/sdk.tsx',
-      name: 'ChatBoxSDK',
-      formats: ['umd'],
-      fileName: (format) => `chatbox-sdk.${format}.js`
+      name: 'ChatBox',
+      formats: ['es'],
+      fileName: (format) => `chatbox.${format}.js`
     },
     rollupOptions: {
       output: {

@@ -1,11 +1,11 @@
-import { sendMessage } from './services/chatboxApi';
+import { sendMessage } from './services';
 
 export type Message = {
   type: 'info' | 'command' | 'response' | 'error';
   content: string;
 };
 
-export const processMessage = async (command: string, url: string, appId: string, loadUserToken?: () => Promise<string>, language: string, chatId?: string, onChunk?: (chunk: Message) => void): Promise<void> => {
+export const processMessage = async (command: string, url: string, appId: string, language: string, loadUserToken?: () => Promise<string>, chatId?: string, onChunk?: (chunk: Message) => void): Promise<void> => {
   const trimmedCommand = command.trim();
 
   if (trimmedCommand === '/clear') {
