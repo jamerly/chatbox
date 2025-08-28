@@ -29,13 +29,16 @@
 .minimized .minimized-icon {
   justify-content: center;
   align-items: center;
-  width: 100%;
-  height: 100%;
+  width: 60px;
+  height: 60px;
   background-color: #FF6600;
   border-radius: 50%;
   color: white;
   padding-left:2px;
   box-sizing: border-box;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
 }
 
 .minimized .chatbox-body,
@@ -45,7 +48,7 @@
 
 .chatbox-container.chatbox-style {
   font-family: 'monospace', monospace;
-  background-color: #F8F8F8;
+  background-color: #F8F8F8FF;
   color: #993D00;
   border-radius: 8px;
 }
