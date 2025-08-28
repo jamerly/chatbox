@@ -60,6 +60,7 @@ export const fetchWelcomeMessage = async (url:string, appId: string, userToken: 
     'X-App-Id': appId,
     'X-Accept-Language': language,
     'X-Session-Id': sessionId || '',
+    'X-Chat-Token': localStorage.getItem("chatbox_chat_token") || '',
     'Authorization': `Bearer ${userToken}`
   });
 

@@ -48,7 +48,7 @@
 
 .chatbox-container.chatbox-style {
   font-family: 'monospace', monospace;
-  background-color: #F8F8F8FF;
+  background-color: transparent;
   color: #993D00;
   border-radius: 8px;
 }

@@ -170,11 +170,13 @@ const App: React.FC<AppProps> = (props) => {
 
   const handleNewChat = () => {
     setMessages([{ type: 'info', content: props.welcomeMessage }]);
+    localStorage.setItem("chatbox_chat_token", "");
     setChatId(undefined);
     setIsMenuOpen(false);
   };
 
   const handleEndChat = () => {
+    localStorage.setItem("chatbox_chat_token", "");
     props.onDestroy?.();
     setIsMenuOpen(false);
   };
