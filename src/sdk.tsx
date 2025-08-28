@@ -10,8 +10,7 @@ declare global {
       init: (options?: { 
         serverUrl?: string, 
         target?: HTMLElement, 
-        defaultWidth?: string, 
-        defaultHeight?: string,
+        zIndex?: string,
         closable?: boolean,
         loadUserToken?: () => Promise<string>,
         appId?: string 
@@ -24,8 +23,7 @@ const ChatBoxSDK = {
   init: async (options?: { 
     serverUrl?: string, 
     target?: HTMLElement, 
-    defaultWidth?: string, 
-    defaultHeight?: string, 
+    zIndex?: string,
     closable?: boolean,
     loadUserToken?: () => Promise<string>,
     appId?: string 
@@ -41,9 +39,12 @@ const ChatBoxSDK = {
     }
 
     let welcomeMessage: string = '';
+    let agentName: string | undefined;
     try {
       let userToken = loadUserToken ? await loadUserToken() : undefined;
-      welcomeMessage = await fetchWelcomeMessage(serverUrl, appId, userToken, navigator.language || "en-US");
+      const initData = await fetchWelcomeMessage(serverUrl, appId, userToken, navigator.language || "en-US");
+      welcomeMessage = initData.message;
+      agentName = initData.agentName;
     } catch (error) {
       console.error('Failed to initialize ChatBoxSDK:', error);
       return;
@@ -57,9 +58,7 @@ const ChatBoxSDK = {
       container.style.position = 'fixed';
       container.style.bottom = '20px';
       container.style.right = '20px';
-      container.style.width = options?.defaultWidth || '400px';
-      container.style.height = options?.defaultHeight || '600px';
-      container.style.zIndex = '9999';
+      container.style.zIndex = options?.zIndex || '20';
       document.body.appendChild(container);
     }
 
@@ -73,6 +72,7 @@ const ChatBoxSDK = {
           appId={appId}
           loadUserToken={loadUserToken}
           language={navigator.language || "en-US"}
+          agentName={agentName}
           
           closable={closable}
           onDestroy={() => {

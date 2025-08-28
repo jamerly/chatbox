@@ -11,7 +11,8 @@ interface ApiResponse<T = any> {
 interface InitResponse {
   sessionId: string;
   message: string;
-  chatToken: string
+  chatToken: string;
+  agentName?: string;
 }
 // Minimal HttpService for this SDK
 class HttpService {
@@ -52,7 +53,7 @@ class HttpService {
   }
 }
 
-export const fetchWelcomeMessage = async (url:string, appId: string, userToken: string | undefined, language: string): Promise<string> => {
+export const fetchWelcomeMessage = async (url:string, appId: string, userToken: string | undefined, language: string): Promise<InitResponse> => {
   let sessionId = localStorage.getItem("chatbox_session_id");
   const responseData = await HttpService.get<InitResponse>(`${url}/api/chatbases/client/init`, {
     'Content-Type': 'application/json',
@@ -68,7 +69,7 @@ export const fetchWelcomeMessage = async (url:string, appId: string, userToken: 
     localStorage.setItem("chatbox_session_id", responseData.sessionId);
     localStorage.setItem("chatbox_chat_token", responseData.chatToken);
   }
-  return responseData.message;
+  return responseData;
 };
 
 export const queryChat = async (url: string, appId: string, userToken: string | undefined, language: string): Promise<any> => {
