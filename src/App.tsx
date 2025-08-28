@@ -70,13 +70,13 @@ const App: React.FC<AppProps> = (props) => {
     };
 
     if (isMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      container.addEventListener('mousedown', handleClickOutside);
     } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+      container.removeEventListener('mousedown', handleClickOutside);
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      container.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isMenuOpen]);
 
