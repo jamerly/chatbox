@@ -12,7 +12,7 @@ export default defineConfig({
     lib: {
       entry: 'src/sdk.tsx',
       name: 'ChatBox',
-      formats: ['es'],
+      formats: ['umd'],
       fileName: (format) => `chatbox.${format}.js`
     },
     rollupOptions: {

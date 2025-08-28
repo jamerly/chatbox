@@ -1,9 +1,18 @@
 const useMock = import.meta.env.MODE === 'mock';
 
-const api = useMock ? await import('./chatboxApi.mock') : await import('./chatboxApi');
+const apiPromise = useMock ? import('./chatboxApi.mock') : import('./chatboxApi');
 
-export const {
-  fetchWelcomeMessage,
-  queryChat,
-  sendMessage
-} = api;
+export const fetchWelcomeMessage = async (...args: any[]) => {
+  const api = await apiPromise;
+  return api.fetchWelcomeMessage(...args);
+};
+
+export const queryChat = async (...args: any[]) => {
+  const api = await apiPromise;
+  return api.queryChat(...args);
+};
+
+export const sendMessage = async (...args: any[]) => {
+  const api = await apiPromise;
+  return api.sendMessage(...args);
+};
