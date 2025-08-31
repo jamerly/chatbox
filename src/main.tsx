@@ -1,6 +1,10 @@
-import { init } from './App';
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import './index.css'
+import App from './App.tsx'
 
-init({
-  appId: 'your-app-id', // Replace with your App ID
-  serverUrl: 'https://your-server-url', // Replace with your server URL
-});
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+)

@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
-import './App.css';
-import { fetchWelcomeMessage } from './services/chatboxApi';
+import './chatbox.css';
+import ChatBoxView from './ChatBoxView';
+import ChatBoxFloating from './ChatBoxFloating';
 
 declare global {
   interface Window {
@@ -10,8 +10,8 @@ declare global {
       init: (options?: { 
         serverUrl?: string, 
         target?: HTMLElement, 
-        zIndex?: string,
-        closable?: boolean,
+        // zIndex?: string,
+        // closable?: boolean,
         loadUserToken?: () => Promise<string>,
         appId?: string 
         }) => void;
@@ -23,69 +23,44 @@ const ChatBoxSDK = {
   init: async (options?: { 
     serverUrl?: string, 
     target?: HTMLElement, 
-    zIndex?: string,
-    closable?: boolean,
+    // zIndex?: string,
+    // closable?: boolean,
     loadUserToken?: () => Promise<string>,
     appId?: string 
   }) => {
-    const serverUrl = options?.serverUrl || 'https://api.tiein.ai';
     const appId = options?.appId;
     const loadUserToken = options?.loadUserToken;
-    const closable = options?.closable ?? true;
+    const serverUrl = options?.serverUrl;
+    // const closable = options?.closable ?? true;
     let destroyed = false;
     if (!appId) {
       console.error('App ID is required for ChatBoxSDK initialization.');
       return;
     }
 
-    let welcomeMessage: string = '';
-    let agentName: string | undefined;
-    try {
-      let userToken = loadUserToken ? await loadUserToken() : undefined;
-      const initData = await fetchWelcomeMessage(serverUrl, appId, userToken, navigator.language || "en-US");
-      welcomeMessage = initData.message;
-      agentName = initData.agentName;
-    } catch (error) {
-      console.error('Failed to initialize ChatBoxSDK:', error);
-      return;
-    }
+    // let agentName: string | undefined;
 
     let container = options?.target;
+    let isFloating = false;
 
     if (!container) {
       container = document.createElement('div');
-      container.className = 'chatbox-container';
-      container.style.position = 'fixed';
-      container.style.bottom = '20px';
-      container.style.right = '20px';
-      container.style.zIndex = options?.zIndex || '20';
       document.body.appendChild(container);
+      isFloating = true;
     }
 
     const root = ReactDOM.createRoot(container);
     root.render(<>{ !destroyed &&
       <React.StrictMode>
-        <App 
-          container={container}
-          welcomeMessage={welcomeMessage}
+        { isFloating ? <ChatBoxFloating
           serverUrl={serverUrl}
           appId={appId}
           loadUserToken={loadUserToken}
-          language={navigator.language || "en-US"}
-          agentName={agentName}
-          
-          closable={closable}
-          onDestroy={() => {
-            destroyed = true;
-            setTimeout(() => { 
-              container.classList.add('minimized');
-              setTimeout(() => {
-                root.unmount();
-                document.body.removeChild(container);
-              }, 500);
-            }, 500);
-          }}
-        />
+        /> : <ChatBoxView
+          serverUrl={serverUrl}
+          appId={appId}
+          loadUserToken={loadUserToken}
+        />}
       </React.StrictMode>}</>
     );
   },

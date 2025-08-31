@@ -1,19 +1,20 @@
-// chatbox/src/services/chatboxApi.ts
-
-// Minimal ServerResponse interface for this SDK
-interface ApiResponse<T = any> {
+export interface ApiResponse<T = any> {
   success: boolean;
   message: string;
   code: number | null;
   data: T;
 }
 
-interface InitResponse {
+export interface InitResponse {
   sessionId: string;
   message: string;
   chatToken: string;
   agentName?: string;
 }
+export type Message = {
+  type: 'info' | 'command' | 'response' | 'error';
+  content: string;
+};
 // Minimal HttpService for this SDK
 class HttpService {
   static async get<T = any>(url: string, headers: HeadersInit = {}): Promise<T> {

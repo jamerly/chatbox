@@ -1,12 +1,10 @@
-// src/services/chatboxApi.mock.ts
-
-import type { Message } from '../messageProcessor';
+import { type Message,type InitResponse } from './chatboxApi';
 
 // Mock implementation of fetchWelcomeMessage
-export const fetchWelcomeMessage = async (url: string, appId: string, userToken: string | undefined, language: string): Promise<string> => {
+export const fetchWelcomeMessage = async (url: string, appId: string, userToken: string | undefined, language: string): Promise<InitResponse> => {
   console.log('Mock API: fetchWelcomeMessage called with:', { url, appId, userToken, language });
   await new Promise(resolve => setTimeout(resolve, 500)); // Simulate network delay
-  return "Welcome to the Mock ChatBox! How can I help you today?";
+  return {"message": "Welcome to the Mock ChatBox! How can I help you today?" } as InitResponse;
 };
 
 // Mock implementation of queryChat
