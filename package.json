@@ -1,34 +1,34 @@
 {
-  "name": "chatbox",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "name": "@your-org/chatbox",
+  "version": "0.0.1",
+  "description": "A customizable chatbox component for web applications.",
+  "main": "./dist/chatbox.umd.cjs",
+  "module": "./dist/chatbox.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "vite",
-    "dev:mock": "vite --mode mock",
-    "build": "tsc -b && vite build",
-    "build:sdk": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "build": "tsc -p tsconfig.build.json && vite build"
+  },
+  "publishConfig": {
+    "registry": "YOUR_PRIVATE_NPM_REGISTRY_URL"
   },
   "dependencies": {
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "unified": "^11.0.4",
+    "remark-parse": "^11.0.0",
+    "remark-react": "^9.0.1"
   },
   "devDependencies": {
-    "@eslint/js": "^9.33.0",
     "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
-    "eslint": "^9.33.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "globals": "^16.3.0",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2",
-    "vite-plugin-css-injected-by-js": "^3.5.2"
+    "vite": "^5.0.8",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0"
   }
 }
