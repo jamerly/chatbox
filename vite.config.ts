@@ -8,6 +8,9 @@ export default defineConfig({
   define: {
     'process.env.NODE_ENV': JSON.stringify('production')
   },
+  optimizeDeps: {
+    include: ['remark-gfm'],
+  },
   build: {
     lib: {
       entry: 'src/sdk.tsx',

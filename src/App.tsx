@@ -1,20 +1,34 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 import ChatBoxView from './ChatBoxView';
 import ChatBoxFloating from './ChatBoxFloating';
 
-const App: React.FC = () => {  
+const App: React.FC = () => {
+  const [mode, setMode] = useState<'chat' | 'floating'>('chat');
+
+  const toggleMode = () => {
+    setMode(prevMode => (prevMode === 'chat' ? 'floating' : 'chat'));
+  };
+
   return (
     <>
-      <div style={{ width: '400px', height: '600px',  padding: '10px' }}>
-        <ChatBoxView appId='testAppId' />
-      </div>
+      <h1>ChatBox Demo</h1>
+      <button onClick={toggleMode}>
+        Switch to {mode === 'chat' ? 'Floating' : 'Chat'} Mode
+      </button>
 
-      <ChatBoxFloating appId='testAppId' />
+      {mode === 'chat' ? (
+        <div style={{ width: '400px', height: '600px', padding: '10px' }}>
+          <ChatBoxView appId='0dd746d300e74782aecceb88767208510d03b20c8b17488480dc9dec313d383a' />
+        </div>
+      ) : (
+        <>
+        <ChatBoxFloating appId='testAppId' />
+        </>
+      )}
     </>
   );
 };
-
 
 export default App;

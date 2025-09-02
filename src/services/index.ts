@@ -1,23 +1,25 @@
-import { type InitResponse } from "./chatboxApi"
+import { type InitResponse, type Message, type ChatHistoryItem } from "./chatboxApi"
+
+export { type InitResponse, type Message, type ChatHistoryItem };
 
 const useMock = import.meta.env.MODE === 'mock';
 
 
 const apiPromise = useMock ? import('./chatboxApi.mock') : import('./chatboxApi');
 
-export const fetchWelcomeMessage = async (...args: any[]): Promise<InitResponse> => {
+export const fetchWelcomeMessage = async (url:string, appId: string, userToken: string | undefined, language: string): Promise<InitResponse> => {
   const api = await apiPromise;
-  return api.fetchWelcomeMessage(...args);
+  return api.fetchWelcomeMessage(url, appId, userToken, language);
 };
 
-export const queryChat = async (...args: any[]): Promise<any> => {
+export const queryChat = async (url: string, appId: string, userToken: string | undefined, language: string): Promise<ChatHistoryItem[]> => {
   const api = await apiPromise;
-  return api.queryChat(...args);
+  return api.queryChat(url, appId, userToken, language);
 };
 
-export const sendMessage = async (...args: any[]): Promise<void> => {
+export const sendMessage = async (url: string, appId: string, userToken: string | undefined, language: string, message: string, chatId?: string, onChunk?: (chunk: string) => void): Promise<void> => {
   const api = await apiPromise;
-  return api.sendMessage(...args);
+  return api.sendMessage(url, appId, userToken, language, message, chatId, onChunk);
 };
 
 
@@ -31,7 +33,7 @@ export const processMessage = async (command: string, url: string, appId: string
 
   try {
     let userToken = await loadUserToken?.();
-    await sendMessage(url, appId, userToken,language, trimmedCommand, chatId, chunkMsg =>{
+    await sendMessage(url, appId, userToken,language, trimmedCommand, chatId, (chunkMsg: string) =>{
       // Handle each chunk of the response here
       const chunkMsgs = chunkMsg.split("\n");
       for( var i = 0 ;i < chunkMsgs.length; i++ ){ 

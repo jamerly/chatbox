@@ -13,7 +13,10 @@ export const queryChat = async (url: string, appId: string, userToken: string | 
   await new Promise(resolve => setTimeout(resolve, 500));
   return [
     { userMessage: "Hello", aiResponse: "Hi there! This is a mock response." },
-    { userMessage: "What can you do?", aiResponse: "I can simulate conversations for development purposes." }
+    { userMessage: "What can you do?", aiResponse: "I can simulate conversations for development purposes." },
+    { userMessage: "Show me a link", aiResponse: "Here's a link:\n ```USER_OPERATION\n{\"type\": \"link\", \"content\": \"Visit Google\", \"url\": \"https://www.google.com\"}\n```" },
+    { userMessage: "Show me a button", aiResponse: "Here's a button:\n ```USER_OPERATION\n{\"type\": \"button\", \"content\": \"Click Me!\", \"action\": \"doSomething\"}\n```" },
+    { userMessage: "Send a command", aiResponse: "Here's a command:\n ```USER_OPERATION\n{\"type\": \"command\", \"content\": \"Run /clear\", \"command\": \"/clear\"}\n```" }
   ];
 };
 

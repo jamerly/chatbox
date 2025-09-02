@@ -12,9 +12,14 @@ export interface InitResponse {
   agentName?: string;
 }
 export type Message = {
-  type: 'info' | 'command' | 'response' | 'error';
+  type: 'info' | 'command' | 'response' | 'error' | 'warn';
   content: string;
 };
+
+export interface ChatHistoryItem {
+  userMessage: string;
+  aiResponse: string;
+}
 // Minimal HttpService for this SDK
 class HttpService {
   static async get<T = any>(url: string, headers: HeadersInit = {}): Promise<T> {

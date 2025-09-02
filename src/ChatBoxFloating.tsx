@@ -1,6 +1,8 @@
 import { useState } from "react";
 import ChatBoxView from "./ChatBoxView";
 import "./chatbox.floating.css"
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 interface ChatBoxFloatingProps {
   serverUrl?: string | null | undefined;
   appId: string;
@@ -11,14 +13,14 @@ interface ChatBoxFloatingProps {
 const ChatBoxFloating: React.FC<ChatBoxFloatingProps> = ( options: ChatBoxFloatingProps) => {
   const [showGreetingBubble, setShowGreetingBubble] = useState(false);
   const [isMinimized, setIsMinimized] = useState(true);
-  const [greetingMessage, setGreetingMessage] = useState(null);
+  const [greetingMessage, setGreetingMessage] = useState<string | null>(null);
   const toggleMinimize = () => {
     setIsMinimized(!isMinimized);
   };
   return (<div className="chatbox-floating">
     {showGreetingBubble && !!greetingMessage && isMinimized && (
         <div className="greeting-bubble">
-          {greetingMessage}
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>{greetingMessage}</ReactMarkdown>
           <span className="greeting-bubble-close" onClick={() => setShowGreetingBubble(false)}>
             &times;
           </span>
@@ -34,7 +36,7 @@ const ChatBoxFloating: React.FC<ChatBoxFloatingProps> = ( options: ChatBoxFloati
           <ChatBoxView
             appId="testAppId"
             onMinimize={toggleMinimize}
-            onInit={(message) => {
+            onInit={(message: string | null) => {
               setGreetingMessage(message);
               setShowGreetingBubble(true);
             }}

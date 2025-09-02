@@ -1,5 +1,6 @@
 import React, { Component, createRef } from 'react';
 import { queryChat, fetchWelcomeMessage, processMessage, type Message } from './services';
+import MarkdownRenderer from './MarkdownRenderer';
 import './chatbox.css'; // Keep App.css for now, will refactor later
 
 interface ChatBoxViewProps {
@@ -11,7 +12,7 @@ interface ChatBoxViewProps {
   onDestroy?: (() => void) | undefined;
   agentName?: string | undefined;
   onMinimize?: (() => void) | undefined;
-  onInit?: ((welcomeMessage: string) => void) | undefined;
+  onInit?: ((welcomeMessage: string | null) => void) | undefined;
 }
 
 interface ChatBoxViewState {
@@ -46,6 +47,7 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
   }
 
   componentDidMount() {
+    console.log("component did mount")
     const { appId, language } = this.props;
     if (!appId) {
       console.error('App ID is required for ChatBoxSDK initialization.');
@@ -64,7 +66,7 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
   private loadInit = async (appId: string, language?: string) => {
     const { loadUserToken } = this.props;
     let userToken = loadUserToken ? await loadUserToken() : undefined;
-    const welcomeMessage = await fetchWelcomeMessage(this.getServerHost(), appId, userToken, language);
+    const welcomeMessage = await fetchWelcomeMessage(this.getServerHost(), appId, userToken, language || "en-US");
     console.log('Fetched welcome message:', welcomeMessage);
     this.setState({ greetingMessage: welcomeMessage.message });
     
@@ -77,7 +79,7 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
     const onInit = this.props.onInit;
     const {  appId, loadUserToken, language } = this.props;
     const userToken = await loadUserToken?.();
-    const history = await queryChat(this.getServerHost(), appId, userToken, language);
+    const history = await queryChat(this.getServerHost(), appId, userToken, language || "en-US");
     for (const messageItem of history) {
       this.setState(prevState => ({
         messages: [...prevState.messages, { type: 'command', content: messageItem.userMessage }],
@@ -225,9 +227,13 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
           </div>
           <div className="chatbox-body" ref={this.chatBodyRef}>
             {messages.map((msg, index) => (
-              <p key={index} className={msg.type === 'warn' ? 'message-warn-special' : msg.type}>
-                {msg.content}
-              </p>
+              <div key={index} className={msg.type === 'warn' ? 'message-warn-special' : msg.type}>
+                {msg.type === 'response' ? (
+                  <MarkdownRenderer content={msg.content} />
+                ) : (
+                  <p>{msg.content}</p>
+                )}
+              </div>
             ))}
           </div>
           <div className="chatbox-footer">
