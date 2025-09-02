@@ -1,6 +1,6 @@
 {
-  "name": "@your-org/chatbox",
-  "version": "0.0.1",
+  "name": "@jamerly/chatbox",
+  "version": "0.0.8",
   "description": "A customizable chatbox component for web applications.",
   "main": "./dist/chatbox.umd.cjs",
   "module": "./dist/chatbox.js",
@@ -11,9 +11,6 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -p tsconfig.build.json && vite build"
-  },
-  "publishConfig": {
-    "registry": "YOUR_PRIVATE_NPM_REGISTRY_URL"
   },
   "dependencies": {
     "react": "^19.1.1",
