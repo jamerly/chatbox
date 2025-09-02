@@ -14,11 +14,13 @@ const ChatBoxFloating: React.FC<ChatBoxFloatingProps> = ( options: ChatBoxFloati
   const [showGreetingBubble, setShowGreetingBubble] = useState(false);
   const [isMinimized, setIsMinimized] = useState(true);
   const [greetingMessage, setGreetingMessage] = useState<string | null>(null);
+  const [loadSucceed, setLoadSucceed] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
   const toggleMinimize = () => {
     setIsMinimized(!isMinimized);
   };
   return (<div className="chatbox-floating">
-    {showGreetingBubble && !!greetingMessage && isMinimized && (
+    {showGreetingBubble && !!greetingMessage && isMinimized && loadSucceed && (
         <div className="greeting-bubble">
           <ReactMarkdown remarkPlugins={[remarkGfm]}>{greetingMessage}</ReactMarkdown>
           <span className="greeting-bubble-close" onClick={() => setShowGreetingBubble(false)}>
@@ -37,8 +39,16 @@ const ChatBoxFloating: React.FC<ChatBoxFloatingProps> = ( options: ChatBoxFloati
             appId="testAppId"
             onMinimize={toggleMinimize}
             onInit={(message: string | null) => {
+              setLoadSucceed(true);
               setGreetingMessage(message);
               setShowGreetingBubble(true);
+            }}
+            onInitError={ e=>{
+              console.error(e);
+              setLoadSucceed(false);
+              setTimeout(()=>{
+                setIsMinimized(true)
+              },1000)
             }}
           />
         )
