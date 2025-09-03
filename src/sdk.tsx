@@ -13,6 +13,7 @@ declare global {
         // zIndex?: string,
         // closable?: boolean,
         loadUserToken?: () => Promise<string>,
+        onUserAction?:((e: any ) => void) | undefined;
         appId?: string 
         }) => void;
     };
@@ -26,11 +27,13 @@ const ChatBoxSDK = {
     // zIndex?: string,
     // closable?: boolean,
     loadUserToken?: () => Promise<string>,
+    onUserAction?:((e: any ) => void) | undefined;
     appId?: string 
   }) => {
     const appId = options?.appId;
     const loadUserToken = options?.loadUserToken;
     const serverUrl = options?.serverUrl;
+    const onUserAction = options?.onUserAction;
     // const closable = options?.closable ?? true;
     let destroyed = false;
     if (!appId) {
@@ -55,10 +58,12 @@ const ChatBoxSDK = {
         { isFloating ? <ChatBoxFloating
           serverUrl={serverUrl}
           appId={appId}
+          onUserAction={onUserAction}
           loadUserToken={loadUserToken}
         /> : <ChatBoxView
           serverUrl={serverUrl}
           appId={appId}
+          onUserAction={onUserAction}
           loadUserToken={loadUserToken}
         />}
       </React.StrictMode>}</>

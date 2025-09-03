@@ -8,6 +8,7 @@ interface ChatBoxFloatingProps {
   appId: string;
   loadUserToken?: (() => Promise<string | undefined>) | undefined;
   closable?: boolean | undefined;
+  onUserAction?:((e: any ) => void) | undefined;
 }
 
 const ChatBoxFloating: React.FC<ChatBoxFloatingProps> = ( options: ChatBoxFloatingProps) => {
@@ -19,6 +20,7 @@ const ChatBoxFloating: React.FC<ChatBoxFloatingProps> = ( options: ChatBoxFloati
   const toggleMinimize = () => {
     setIsMinimized(!isMinimized);
   };
+  const onUserAction = options.onUserAction;
   return (<div className="chatbox-floating">
     {showGreetingBubble && !!greetingMessage && isMinimized && loadSucceed && (
         <div className="greeting-bubble">
@@ -43,6 +45,7 @@ const ChatBoxFloating: React.FC<ChatBoxFloatingProps> = ( options: ChatBoxFloati
               setGreetingMessage(message);
               setShowGreetingBubble(true);
             }}
+            onUserAction={onUserAction}
             onInitError={ e=>{
               console.error(e);
               setLoadSucceed(false);

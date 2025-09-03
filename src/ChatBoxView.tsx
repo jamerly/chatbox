@@ -14,6 +14,7 @@ interface ChatBoxViewProps {
   onMinimize?: (() => void) | undefined;
   onInit?: ((welcomeMessage: string | null) => void) | undefined;
   onInitError?:((e: string ) => void) | undefined;
+  onUserAction?:((e: any ) => void) | undefined;
 }
 
 interface ChatBoxViewState {
@@ -70,7 +71,6 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
       const { loadUserToken } = this.props;
       let userToken = loadUserToken ? await loadUserToken() : undefined;
       const welcomeMessage = await fetchWelcomeMessage(this.getServerHost(), appId, userToken, language || "en-US");
-      console.log('Fetched welcome message:', welcomeMessage);
       this.setState({ greetingMessage: welcomeMessage.message });
       
       this.setState(prevState => ({
@@ -103,7 +103,7 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
         }));
       }
       this.setState({
-        initFailed:true,
+        initFailed:false,
         loading:false
       })
       if( history.length > 0 ){
@@ -140,7 +140,6 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
       this.setState({ messages: [], chatId: undefined });
     } else {
       this.setState({ isProcessing: true });
-
       let lastMessage = "";
       await processMessage(
         command,
@@ -150,22 +149,21 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
         loadUserToken,
         chatId,
         (chunk: Message) => {
-          console.log( chunk )
-          const newMessages: any = [this.state.messages];
-            if (chunk.type === "response") {
-              lastMessage += chunk.content;
-              const updatedChunk = { type: 'response', content: lastMessage };
-              const lastMsgIndex = newMessages.length - 1;
-              if (lastMsgIndex >= 0 && newMessages[lastMsgIndex].type === 'response') {
-                newMessages[lastMsgIndex] = updatedChunk;
-              } else {
-                newMessages.push(updatedChunk);
-              }
+          const newMessages: any = [...this.state.messages];
+          if (chunk.type === "response") {
+            lastMessage += chunk.content;
+            const updatedChunk = { type: 'response', content: lastMessage };
+            const lastMsgIndex = newMessages.length - 1;
+            if (lastMsgIndex >= 0 && newMessages[lastMsgIndex].type === 'response') {
+              newMessages[lastMsgIndex] = updatedChunk;
             } else {
-              newMessages.push(chunk);
+              newMessages.push(updatedChunk);
             }
+          } else {
+            newMessages.push(chunk);
+          }
           this.setState({
-             messages: newMessages
+            messages: newMessages
           });
         }
       );
@@ -257,7 +255,7 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
               {messages.map((msg, index) => (
                 <div key={index} className={msg.type === 'warn' ? 'message-warn-special' : msg.type}>
                   {msg.type === 'response' ? (
-                    <MarkdownRenderer content={msg.content} />
+                    <MarkdownRenderer content={msg.content} onUserAction={this.props.onUserAction} />
                   ) : (
                     <p>{msg.content}</p>
                   )}

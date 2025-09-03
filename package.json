@@ -1,10 +1,18 @@
 {
   "name": "@jamerly/chatbox",
-  "version": "0.0.8",
+  "version": "0.1.3",
   "description": "A customizable chatbox component for web applications.",
-  "main": "./dist/chatbox.umd.cjs",
-  "module": "./dist/chatbox.js",
+  "type": "module",
+  "main": "./dist/chatbox.umd.js",
+  "module": "./dist/chatbox.es.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/chatbox.es.js",
+      "require": "./dist/chatbox.umd.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": [
     "dist"
   ],
@@ -17,15 +25,16 @@
     "react-dom": "^19.1.1",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "unified": "^11.0.4",
     "remark-parse": "^11.0.0",
-    "remark-react": "^9.0.1"
+    "remark-react": "^9.0.1",
+    "unified": "^11.0.4"
   },
   "devDependencies": {
     "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
     "typescript": "~5.8.3",
     "vite": "^5.0.8",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0"
+    "vite-plugin-css-injected-by-js": "^3.5.2"
   }
 }

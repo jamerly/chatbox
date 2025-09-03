@@ -32,6 +32,11 @@ export const processMessage = async (command: string, url: string, appId: string
   }
 
   try {
+    if( !!loadUserToken){
+      loadUserToken().then((token)=>{
+        
+      })
+    }
     let userToken = await loadUserToken?.();
     await sendMessage(url, appId, userToken,language, trimmedCommand, chatId, (chunkMsg: string) =>{
       // Handle each chunk of the response here

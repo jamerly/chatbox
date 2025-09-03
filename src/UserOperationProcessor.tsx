@@ -1,18 +1,29 @@
 import React, { useState, useEffect, useCallback } from 'react'
 
+interface ConfigProps {
+  content: string,
+  name:string
+  params:any
+}
+
 interface UserOperationProcessorProps {
-  config: object
+  config: ConfigProps
   description?: string
   // alreadyCreated?: boolean
   children?: React.ReactNode
+  onUserAction?:((e: any ) => void) | undefined;
 }
 
-const UserOperationProcessor : React.FC<UserOperationProcessorProps> = ({ config, description, children }) => {
-
+const UserOperationProcessor : React.FC<UserOperationProcessorProps> = ({ config, description, children,onUserAction }) => {
+  if( onUserAction ){
+    setTimeout(()=>{
+      onUserAction(config)
+    },200);
+  }
   return (
     <div>
       <div>
-        <button>{config.content}</button>
+        <button>Executing {config.name}</button>
       </div>
     </div>
   )

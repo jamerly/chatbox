@@ -1,12 +1,18 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "target": "es2020",
+    "lib": ["es2020", "dom"],
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
     "outDir": "./dist",
     "declaration": true,
     "declarationDir": "./dist",
     "emitDeclarationOnly": true,
     "jsx": "react-jsx",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "skipLibCheck": true
   },
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", "dist", "src/main.tsx", "src/sdk.tsx", "src/**/*.spec.ts", "src/**/*.test.ts"]
