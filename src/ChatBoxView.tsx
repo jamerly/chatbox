@@ -118,7 +118,7 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
     
   };
 
-  private sendMessage = async () => {
+  private sendMessage = () => {
     const { chatInput, messages, chatId } = this.state;
     const { appId, language } = this.props;
     let loadUserToken : () => Promise<string>;
@@ -140,8 +140,7 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
       this.setState({ messages: [], chatId: undefined });
     } else {
       this.setState({ isProcessing: true });
-      let lastMessage = "";
-      await processMessage(
+      processMessage(
         command,
         this.getServerHost(),
         appId,
@@ -149,32 +148,35 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
         loadUserToken,
         chatId,
         (chunk: Message) => {
-          const newMessages: any = [...this.state.messages];
-          if (chunk.type === "response") {
-            lastMessage += chunk.content;
-            const updatedChunk = { type: 'response', content: lastMessage };
-            const lastMsgIndex = newMessages.length - 1;
-            if (lastMsgIndex >= 0 && newMessages[lastMsgIndex].type === 'response') {
-              newMessages[lastMsgIndex] = updatedChunk;
+          this.setState(prevState => {
+            const newMessages = [...prevState.messages];
+            console.log("print one by one")
+            if (chunk.type === "response") {
+              const lastMsgIndex = newMessages.length - 1;
+              if (lastMsgIndex >= 0 && newMessages[lastMsgIndex].type === 'response') {
+                newMessages[lastMsgIndex] = {
+                  ...newMessages[lastMsgIndex],
+                  content: newMessages[lastMsgIndex].content + chunk.content,
+                };
+              } else {
+                newMessages.push({ type: 'response', content: chunk.content });
+              }
             } else {
-              newMessages.push(updatedChunk);
+              newMessages.push(chunk);
             }
-          } else {
-            newMessages.push(chunk);
-          }
-          this.setState({
-            messages: newMessages
+            return { messages: newMessages };
           });
         }
-      );
-      this.setState({ isProcessing: false });
+      ).then(() => {
+        this.setState({ isProcessing: false });
+      });
     }
   };
 
   private handleKeyDown = async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
-      await this.sendMessage();
+      this.sendMessage();
     }
   };
 

@@ -29,44 +29,37 @@ export const processMessage = async (command: string, url: string, appId: string
 
   if (trimmedCommand === '/clear') {
     onChunk?.({ "type": 'command', "content": 'clear' });
+    return;
   }
 
   try {
-    if( !!loadUserToken){
-      loadUserToken().then((token)=>{
-        
-      })
-    }
-    let userToken = await loadUserToken?.();
-    await sendMessage(url, appId, userToken,language, trimmedCommand, chatId, (chunkMsg: string) =>{
-      // Handle each chunk of the response here
-      const chunkMsgs = chunkMsg.split("\n");
-      for( var i = 0 ;i < chunkMsgs.length; i++ ){ 
-        let chunkData = chunkMsgs[i].trim();
-        if( chunkData.trim() !== "") {
-          if( chunkData.startsWith("data:") ){
-            chunkData = chunkData.substring(5);
-          }
-          if( chunkData.trim() === "" ){
-            continue;
-          }
-          if( chunkData.trim() === "[DONE]" ){
-            return;
-          }else{
+    const userToken = await loadUserToken?.();
+    let buffer = '';
+    await sendMessage(url, appId, userToken, language, trimmedCommand, chatId, (chunkMsg: string) => {
+      buffer += chunkMsg;
+      const lines = buffer.split('\n');
+      buffer = lines.pop() || ''; // Keep the last partial message in buffer
 
-            try{
-              const trunkJson = JSON.parse(chunkData);
-              if( trunkJson["chunk"] ){
-                onChunk?.({ "type": "response", "content": trunkJson["chunk"] });
+      for (const line of lines) {
+        if (line.trim().startsWith('data:')) {
+          const jsonStr = line.trim().substring(5).trim();
+          if (jsonStr === '[DONE]') {
+            return;
+          }
+          if (jsonStr) {
+            try {
+              const trunkJson = JSON.parse(jsonStr);
+              if (trunkJson.chunk) {
+                onChunk?.({ type: 'response', content: trunkJson.chunk });
               }
-            }catch(e:any){
-              onChunk?.({ "type": "error", "content": `Error: ${e.message}, server response:${chunkMsg}` });
+            } catch (e) {
+              console.warn("Could not parse line: ", jsonStr);
             }
           }
         }
       }
     });
   } catch (error: any) {
-    onChunk?.({"type":"error", "content":`Error: ${error.message}`});
+    onChunk?.({ "type": "error", "content": `Error: ${error.message}` });
   }
 };

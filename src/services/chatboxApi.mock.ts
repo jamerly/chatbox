@@ -23,14 +23,18 @@ export const queryChat = async (url: string, appId: string, userToken: string | 
 // Mock implementation of sendMessage
 export const sendMessage = async (url: string, appId: string, userToken: string | undefined, language: string, message: string, chatId?: string, onChunk?: (chunk: string) => void): Promise<void> => {
   console.log('Mock API: sendMessage called with:', { url, appId, userToken, language, message, chatId });
-  const mockResponse: Message = { type: 'response', content: `Mock response to: "${message}"` };
-  
-  // Simulate streaming response
-  const chunks = JSON.stringify(mockResponse).split('');
-  for (let i = 0; i < chunks.length; i++) {
-    await new Promise(resolve => setTimeout(resolve, 50)); // Simulate chunk delay
-    onChunk?.(chunks[i]);
+  const responseText = `Mock response to: "${message}"`;
+  const words = responseText.split(' ');
+
+  for (const word of words) {
+    const chunk = {
+      chunk: word + ' ',
+    };
+    const sseMessage = `data: ${JSON.stringify(chunk)}\n\n`;
+    onChunk?.(sseMessage);
+    await new Promise(resolve => setTimeout(resolve, 100)); // Simulate chunk delay
   }
+  onChunk?.('data: [DONE]\n\n');
 };
 
 // Mock implementation of uploadFile

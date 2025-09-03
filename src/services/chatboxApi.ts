@@ -122,18 +122,25 @@ export const sendMessage = async (url: string, appId: string, userToken: string 
   }
 
   const reader = response.body?.getReader();
-  if( !reader ){
+  if (!reader) {
     throw new Error('Failed to get reader from response body');
   }
   const decoder = new TextDecoder();
-  let done = false;
-  while( !done ){
-    const { value, done: readerDone } = await reader.read();
-    if( readerDone ){
-      done = true;
-      continue;
+
+  return new Promise((resolve, reject) => {
+    function read() {
+      reader.read().then(({ done, value }) => {
+        if (done) {
+          resolve();
+          return;
+        }
+        const chunk = decoder.decode(value, { stream: true });
+        onChunk?.(chunk);
+        read();
+      }).catch(error => {
+        reject(error);
+      });
     }
-    const chunk = decoder.decode(value, { stream: true });
-    onChunk?.(chunk);
-  }
+    read();
+  });
 };
