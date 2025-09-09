@@ -150,7 +150,6 @@ class ChatBoxView extends Component<ChatBoxViewProps, ChatBoxViewState> {
         (chunk: Message) => {
           this.setState(prevState => {
             const newMessages = [...prevState.messages];
-            console.log("print one by one")
             if (chunk.type === "response") {
               const lastMsgIndex = newMessages.length - 1;
               if (lastMsgIndex >= 0 && newMessages[lastMsgIndex].type === 'response') {

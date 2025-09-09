@@ -68,11 +68,9 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content,onUserActio
               {children}
             </code>
           ) : (
-            <pre>
               <code className={className} {...props}>
                 {children}
               </code>
-            </pre>
           );
         },
       }}
