@@ -20,13 +20,13 @@ const App: React.FC = () => {
 
       {mode === 'chat' ? (
         <div style={{ width: '400px', height: '600px', padding: '10px' }}>
-          <ChatBoxView appId='e3364f1399274de68cdc4a22c88e92f13bca9bf6f0344662baea1199c6b29db3' onUserAction={(e)=>{
+          <ChatBoxView appId='8a0fbbde1a5043b3b33e54505decbeb9281c29fc11bf46a4be18a42179d55bfc' onUserAction={(e) => {
             console.log(e);
           }} />
         </div>
       ) : (
         <>
-        <ChatBoxFloating appId='0dd746d300e74782aecceb88767208510d03b20c8b17488480dc9dec313d383a1' />
+          <ChatBoxFloating appId='8a0fbbde1a5043b3b33e54505decbeb9281c29fc11bf46a4be18a42179d55bfc' />
         </>
       )}
     </>

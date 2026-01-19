@@ -1,3 +1,10 @@
+export interface ApiProtocolResponse<T = any> {
+  success: boolean;
+  message: string;
+  code: number | null;
+  data: T;
+}
+
 export interface ApiResponse<T = any> {
   success: boolean;
   message: string;
@@ -22,17 +29,23 @@ export interface ChatHistoryItem {
 }
 // Minimal HttpService for this SDK
 class HttpService {
+
   static async get<T = any>(url: string, headers: HeadersInit = {}): Promise<T> {
     const response = await fetch(url, { headers });
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Network response was not ok');
     }
-    const apiResponse: ApiResponse<T> = await response.json();
-    if (apiResponse.success) {
-      return apiResponse.data;
+    const apiProtocol: ApiResponse<ApiProtocolResponse<T>> = await response.json();
+    if (apiProtocol.success) {
+      const apiResponse: ApiProtocolResponse<T> = apiProtocol.data;
+      if (apiResponse.success) {
+        return apiResponse.data;
+      } else {
+        throw new Error(apiResponse.message || 'API error');
+      }
     } else {
-      throw new Error(apiResponse.message || 'API error');
+      throw new Error(apiProtocol.message || 'API error');
     }
   }
 
@@ -59,19 +72,20 @@ class HttpService {
   }
 }
 
-export const fetchWelcomeMessage = async (url:string, appId: string, userToken: string | undefined, language: string): Promise<InitResponse> => {
+export const fetchWelcomeMessage = async (url: string, appId: string, userToken: string | undefined, language: string): Promise<InitResponse> => {
   let sessionId = localStorage.getItem("chatbox_session_id");
   const responseData = await HttpService.get<InitResponse>(`${url}/api/chatbases/client/init`, {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
     'X-App-Id': appId,
+    'X-Biz-Id': 'chatbox',
     'X-Accept-Language': language,
     'X-Session-Id': sessionId || '',
     'X-Chat-Token': localStorage.getItem("chatbox_chat_token") || '',
-    'Authorization': `Bearer ${userToken}`
+    'X-Authorization': `Bearer ${userToken}`
   });
 
-  if( responseData.sessionId ){
+  if (responseData.sessionId) {
     localStorage.setItem("chatbox_session_id", responseData.sessionId);
     localStorage.setItem("chatbox_chat_token", responseData.chatToken);
   }
@@ -85,9 +99,10 @@ export const queryChat = async (url: string, appId: string, userToken: string | 
     'Accept': 'application/json',
     'X-App-Id': appId,
     'X-Accept-Language': language,
+    'X-Biz-Id': 'chatbox',
     'X-Session-Id': sessionId || '',
     'X-Chat-Token': localStorage.getItem("chatbox_chat_token") || '',
-    'Authorization': `Bearer ${userToken}`
+    'X-Authorization': `Bearer ${userToken}`
   });
   return responseData;
 };
@@ -98,7 +113,7 @@ export const sendMessage = async (url: string, appId: string, userToken: string 
     requestBody.chatId = chatId;
   }
   let sessionId = localStorage.getItem("chatbox_session_id")
-  if( sessionId ==null ){
+  if (sessionId == null) {
     console.warn("No session ID found");
     onChunk?.(JSON.stringify({ type: 'error', content: 'No session lost, please refresh the page.' }));
     return
@@ -109,9 +124,10 @@ export const sendMessage = async (url: string, appId: string, userToken: string 
       'Content-Type': 'application/json',
       'X-App-Id': appId,
       'X-Accept-Language': language,
+      'X-Biz-Id': 'chatbox',
       'X-Session-Id': sessionId || '',
       'X-Chat-Token': localStorage.getItem("chatbox_chat_token") || '',
-      'Authorization': `Bearer ${userToken}`
+      'X-Authorization': `Bearer ${userToken}`
     },
     body: JSON.stringify(requestBody),
   });
